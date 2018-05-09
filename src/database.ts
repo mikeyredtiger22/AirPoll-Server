@@ -51,6 +51,22 @@ function getNextTreatment(callback) { //todo test functionality
   callback(currentTreatment);
 }
 
+function pushSensorData(requestBody, callback) {
+  let dataBody = {
+    treatment: requestBody.treatment,
+    userID: requestBody.userID,
+    lat: requestBody.lat,
+    lng: requestBody.lng,
+    sensorValue: requestBody.sensorValue,
+    acceleration: requestBody.acceleration,
+    dateTime: requestBody.dateTime
+  };
+  //todo validate treatment value
+  db.collection('data').doc(requestBody.treatment).collection('data').add(dataBody)
+  .then(callback({dataAdded: true}));
+  //todo calculate and return points
+}
+
 //doc(treatment).collection('users')
 
 function getAllData(callback) {
@@ -63,5 +79,6 @@ function getAllData(callback) {
 export {
   returnDataTest,
   createUser,
+  pushSensorData,
   getAllData
 };

@@ -29,9 +29,10 @@ router.post('/user', function (req, res) {
 
 //Push Sensor Data
 router.post('/', function (req, res) {
-  //todo get data (sensorValue, lat, lng, dateTime, userID, acceleration)
-  //todo add data to database for treatment
-  //todo return points
+  //todo validate that all fields are received
+  database.pushSensorData(req.body, result => {
+    res.json(result);
+  });
 });
 
 //Get HeatMap Data
