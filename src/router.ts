@@ -45,7 +45,7 @@ router.get('/', function (req, res) {
 //Get Raw Data
 router.get('/allData', function (req, res) {
   //todo authenticate request
-  //todo return all data from database
+  database.getAllData(data => res.json(data));
   //todo test bandwidth / high data load
 });
 

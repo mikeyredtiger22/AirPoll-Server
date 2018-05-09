@@ -53,7 +53,15 @@ function getNextTreatment(callback) { //todo test functionality
 
 //doc(treatment).collection('users')
 
+function getAllData(callback) {
+  db.collection('data').get()
+  .then(snapshot => {
+    callback(snapshot.docs);
+  })
+}
+
 export {
   returnDataTest,
-  createUser
+  createUser,
+  getAllData
 };
