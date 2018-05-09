@@ -22,9 +22,9 @@ router.get('/data', function(req, res) {
 
 //Create User
 router.post('/user', function (req, res) {
-  //todo create user Obj
-  //todo assign to treatment
-  //todo return ID (and treatment)
+  database.createUser(result => {
+    res.json(result);
+  })
 });
 
 //Push Sensor Data
