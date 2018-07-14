@@ -22,10 +22,12 @@ function returnDataTest(callback) {
   .then(doc =>
     callback(doc.data())
   )
-  .catch(err =>
-    callback(null, err)
-  );
+  .catch(err => {
+    console.error(err);
+  });
 }
+
+//todo create helper class, restructure code
 
 function createUser(callback) {
   getNextTreatment(treatment => {
@@ -34,16 +36,32 @@ function createUser(callback) {
       points: 0
     })
     .then(ref => {
-      callback({userID: ref.id, treatment: treatment})
+      callback({userID: ref.id, treatment: treatment});
     })
     .catch(err => {
-      //todo error
+      console.error(err);
+    });
+  });
+}
+
+function createUserWithID(userID, callback) {
+  getNextTreatment(treatment => {
+    let userData = {
+      treatment: treatment,
+      points: 0
+    };
+    db.collection('users').doc(userID).set(userData).then(() => {
+      callback(userData);
+    })
+    .catch(err => {
+      console.error(err);
     });
   });
 }
 
 /**
- * Returns the smallest treatment group size to add new user to.
+ * Alternates treatments for new users
+ * Todo: Return the smallest treatment group size to add new user to.
  */
 function getNextTreatment(callback) { //todo test functionality
   currentTreatment = (currentTreatment === Treatments.TreatmentA) ?
@@ -52,22 +70,64 @@ function getNextTreatment(callback) { //todo test functionality
 }
 
 function pushSensorData(requestBody, callback) {
-  let dataBody = {
-    treatment: requestBody.treatment,
-    userID: requestBody.userID,
-    lat: requestBody.lat,
-    lng: requestBody.lng,
-    sensorValue: requestBody.sensorValue,
-    acceleration: requestBody.acceleration,
-    dateTime: requestBody.dateTime
-  };
-  //todo validate treatment value
-  db.collection('data').doc(requestBody.treatment).collection('data').add(dataBody)
-  .then(callback({dataAdded: true}));
-  //todo calculate and return points
+  console.log(requestBody);
+  getUserTreatment(requestBody.userID, treatment => {
+    let dataBody = {
+      treatment: treatment,
+      userID: requestBody.userID,
+      lat: requestBody.lat,
+      lng: requestBody.lng,
+      sensorValue: requestBody.sensorValue,
+      acceleration: requestBody.acceleration,
+      dateTime: requestBody.dateTime
+    };
+    db.collection('data').add(dataBody).then(() => {
+      getUserPoints(dataBody.userID, points => {
+        //todo calculate incentive
+        setUserPoints(dataBody.userID, points + 1, () => {
+          callback({dataAdded: true});
+        });
+      });
+    });
+  })
 }
 
-//doc(treatment).collection('users')
+function getUserPoints(userID, callback) {
+  getOrCreateUser(userID, userData => {
+    callback(userData.points);
+  });
+}
+
+function setUserPoints(userID, points, callback) {
+  db.collection('users').doc(userID).set({points: points}).then(() => {
+    callback();
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
+function getUserTreatment(userID, callback) {
+  getOrCreateUser(userID, userData => {
+    callback(userData.treatment);
+  });
+}
+
+function getOrCreateUser(userID, callback) {
+  let userRef = db.collection('users').doc(userID);
+  userRef.get().then(userDoc => {
+    if (userDoc.exists) {
+      callback(userDoc.data());
+    } else {
+      createUserWithID(userID, (userData) => {
+        callback(userData);
+      });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
 
 function getAllData(callback) {
   db.collection('data').get()
