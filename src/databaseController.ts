@@ -11,8 +11,7 @@ function returnDataTest(callback) {
   db.collection('newCol1').doc('newDoc2').set({
     name: 1, year: 'two'
   });
-  db.collection('newCol').doc('newDoc').get()
-  .then(doc => {
+  db.collection('newCol').doc('newDoc').get().then(doc => {
     callback(doc.data());
   })
   .catch(err => {
@@ -22,10 +21,10 @@ function returnDataTest(callback) {
 
 function createUser(treatment: string, callback: (User) => void) {
   let userRef = db.collection('users').doc();
-  let user = {
+  let user: User = {
     ID: userRef.id,
     treatment: treatment,
-    points: 0
+    points: 0,
   };
   userRef.set(user).then(() => {
     callback(user);
@@ -35,13 +34,14 @@ function createUser(treatment: string, callback: (User) => void) {
   });
 }
 
-function createUserWithID(userID, treatment, callback) {
-  let userData = {
+function createUserWithID(userID, treatment, callback: (User) => void) {
+  let user: User = {
+    ID: userID,
     treatment: treatment,
-    points: 0
+    points: 0,
   };
-  db.collection('users').doc(userID).set(userData).then(() => {
-    callback(userData);
+  db.collection('users').doc(userID).set(user).then(() => {
+    callback(user);
   })
   .catch(err => {
     console.error(err);
@@ -67,25 +67,46 @@ function setUserPoints(userID, points, callback) {
 }
 
 function pushSensorData(dataBody, callback) {
-  db.collection('data').add(dataBody).then(callback())
+  db.collection('data').add(dataBody).then(() => {
+    callback();
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
+function getHeatmapData(treatment, timestampStart, callback) {
+  let heatmapData = [];
+  db.collection('data')
+  .where('treatment', '==', treatment)
+  .where('timestamp', '>=', timestampStart)
+  .get().then(allData => {
+    for (let data of allData) {
+      //todo {lat, lng, value} object
+      heatmapData.push(data);
+    }
+    callback(heatmapData);
+  })
   .catch(err => {
     console.error(err);
   });
 }
 
 function getAllData(callback) {
-  db.collection('data').get()
-  .then(snapshot => {
-    callback(snapshot.docs);
+  db.collection('data').get().then(allData => {
+    callback(allData.docs);
   })
+  .catch(err => {
+    console.error(err);
+  });
 }
 
 export {
   returnDataTest,
   createUser,
   createUserWithID,
-  pushSensorData,
   getUser,
   setUserPoints,
+  pushSensorData,
   getAllData
 };

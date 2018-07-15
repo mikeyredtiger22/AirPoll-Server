@@ -1,12 +1,6 @@
 import * as dbController from './databaseController';
 
-enum Treatments {
-  TreatmentA = 'treatmentA',
-  TreatmentB = 'treatmentB'
-}
-
 let currentTreatment: Treatments = Treatments.TreatmentA;
-
 
 /**
  * Alternates treatments for new users
@@ -31,16 +25,15 @@ function getOrCreateUserWithID(userID, callback) {
 }
 
 function pushSensorData(requestBody, callback) {
-  console.log(requestBody);
   getOrCreateUserWithID(requestBody.userID, (user) => {
     let dataBody = {
       treatment: user.treatment,
       userID: requestBody.userID,
-      lat: requestBody.lat,
-      lng: requestBody.lng,
-      sensorValue: requestBody.sensorValue,
-      acceleration: requestBody.acceleration,
-      dateTime: requestBody.dateTime
+      // lat: requestBody.lat,
+      // lng: requestBody.lng,
+      // sensorValue: requestBody.sensorValue,
+      // acceleration: requestBody.acceleration,
+      // dateTime: requestBody.dateTime
     };
     dbController.pushSensorData(dataBody, () => {
       //todo calculate incentive
@@ -50,6 +43,8 @@ function pushSensorData(requestBody, callback) {
     });
   });
 }
+
+//todo: generate timestamp, to heatmap types, test api
 
 function getAllData(callback) {
   dbController.getAllData(callback);

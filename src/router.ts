@@ -24,17 +24,17 @@ router.get('/data', function(req, res) {
 //Push Sensor Data
 router.post('/', function (req, res) {
   //todo validate that all fields are received
-  controller.pushSensorData(req.body, result => {
+  controller.pushSensorData(req.query, result => {
     res.json(result);
   });
 });
 
 //Get HeatMap Data
 router.get('/', function (req, res) {
-  //todo get all sensor data for treatment
-  //todo plan heatmap usage on all platforms
-  //todo calculate and anonymise data
-  //todo return heatmap data
+  console.log(req.query);
+  res.send();
+  //TODO: https://www.npmjs.com/package/express-validator
+  //todo calculate and anonymise data?
 });
 
 //Get Raw Data
