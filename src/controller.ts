@@ -29,12 +29,12 @@ function createUser(requestParams, callback) {
 
 function pushSensorData(requestParams, callback) {
   let dataBody = {
-    sensorID: requestParams.userID,
-    // lat: requestParams.lat,
-    // lng: requestParams.lng,
-    // sensorValue: requestParams.sensorValue,
-    // acceleration: requestParams.acceleration,
-    // dateTime: requestParams.dateTime
+    sensorID: requestParams.sensorID,
+    lat: requestParams.lat,
+    lng: requestParams.lng,
+    value: requestParams.value,
+    accel: requestParams.accel,
+    timestamp: requestParams.timestamp
   };
   dbController.pushSensorData(dataBody, () => {
     //todo calculate incentive
@@ -49,6 +49,7 @@ function getHeatmapData(requestParams, callback) {
   /* use sensorID:
   can return user's own data in separate object
   can create user if not in DB
+  todo return user points (and sensor data history)
    */
   const dayAgoTimestamp = Date.now() - (24 * 3600 * 1000);
   dbController.getUser(requestParams.userID, (user) => {

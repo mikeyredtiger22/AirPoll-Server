@@ -76,9 +76,13 @@ function getHeatmapData(treatment, timestampStart, callback) {
   .where('treatment', '==', treatment)
   .where('timestamp', '>=', timestampStart)
   .get().then(allData => {
-    for (let data of allData.docs) {
-      // todo {lat, lng, value} object
-      heatmapData.push(data);
+    for (let dataDoc of allData.docs) {
+      const data = dataDoc.data();
+      heatmapData.push({
+        lat: data.lat,
+        lng: data.lng,
+        value: data.value,
+      });
     }
     callback(heatmapData);
   })
