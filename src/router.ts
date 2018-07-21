@@ -21,6 +21,13 @@ router.get('/data', function(req, res) {
   });
 });
 
+//Create User
+router.post('/user', function (req, res) {
+  controller.createUser(req.query, result => {
+    res.status(201).json(result);
+  });
+});
+
 //Push Sensor Data
 router.post('/', function (req, res) {
   //todo validate that all fields are received

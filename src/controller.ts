@@ -12,54 +12,58 @@ function getNextTreatment(callback) { //todo test functionality
   callback(currentTreatment);
 }
 
-function getOrCreateUserWithID(userID, callback) {
-  dbController.getUser(userID, user => {
-    if (user) {
-      callback(user);
-    } else {
-      getNextTreatment(treatment => {
-        dbController.createUserWithID(userID, treatment, callback);
-      });
-    }
-  });
-}
-
-function pushSensorData(requestBody, callback) {
-  getOrCreateUserWithID(requestBody.userID, (user) => {
-    let dataBody = {
-      treatment: user.treatment,
-      userID: requestBody.userID,
-      // lat: requestBody.lat,
-      // lng: requestBody.lng,
-      // sensorValue: requestBody.sensorValue,
-      // acceleration: requestBody.acceleration,
-      // dateTime: requestBody.dateTime
+function createUser(requestParams, callback) {
+  getNextTreatment((treatment) => {
+    let user: User = {
+      userID: "uninitialised",
+      treatment: treatment,
+      sensorID: requestParams.sensorID,
+      points: 0,
+      created: Date.now(),
     };
-    dbController.pushSensorData(dataBody, () => {
-      //todo calculate incentive
-      dbController.setUserPoints(dataBody.userID, user.points + 1, () => {
-        callback({dataAdded: true});
-      });
+    dbController.createUser(user, (user) => {
+      callback({user: user});
     });
   });
 }
 
-function getHeatmapData(requestBody, callback) {
+function pushSensorData(requestParams, callback) {
+  let dataBody = {
+    sensorID: requestParams.userID,
+    // lat: requestParams.lat,
+    // lng: requestParams.lng,
+    // sensorValue: requestParams.sensorValue,
+    // acceleration: requestParams.acceleration,
+    // dateTime: requestParams.dateTime
+  };
+  dbController.pushSensorData(dataBody, () => {
+    //todo calculate incentive
+    const reward = 1;
+    dbController.addToUserPoints(dataBody.sensorID, reward, () => {
+      callback({dataAdded: true, reward: reward});
+    });
+  });
+}
+
+function getHeatmapData(requestParams, callback) {
+  /* use sensorID:
+  can return user's own data in separate object
+  can create user if not in DB
+   */
   const dayAgoTimestamp = Date.now() - (24 * 3600 * 1000);
-  getOrCreateUserWithID(requestBody.userID, (user) => {
+  dbController.getUser(requestParams.userID, (user) => {
     dbController.getHeatmapData(user.treatment, dayAgoTimestamp, heatmapData => {
       callback({heatmapData: heatmapData});
     });
   });
 }
 
-//todo: generate timestamp, to heatmap types, test api
-
 function getAllData(callback) {
   dbController.getAllData(callback);
 }
 
 export {
+  createUser,
   pushSensorData,
   getHeatmapData,
   getAllData

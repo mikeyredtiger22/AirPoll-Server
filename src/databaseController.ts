@@ -19,33 +19,17 @@ function returnDataTest(callback) {
   });
 }
 
-function createUser(treatment: string, callback: (User) => void) {
+function createUser(user: User, callback: (User) => void) {
   let userRef = db.collection('users').doc();
-  let user: User = {
-    ID: userRef.id,
-    treatment: treatment,
-    points: 0,
-  };
+  user.userID = userRef.id;
   userRef.set(user).then(() => {
     callback(user);
   })
   .catch(err => {
     console.error(err);
   });
-}
-
-function createUserWithID(userID, treatment, callback: (User) => void) {
-  let user: User = {
-    ID: userID,
-    treatment: treatment,
-    points: 0,
-  };
-  db.collection('users').doc(userID).set(user).then(() => {
-    callback(user);
-  })
-  .catch(err => {
-    console.error(err);
-  });
+  //todo remove sensor ID from other users
+  //todo think about adding message log for users (created, changed sensorID and why)
 }
 
 function getUser(userID: string, callback) {
@@ -57,12 +41,23 @@ function getUser(userID: string, callback) {
   });
 }
 
-function setUserPoints(userID, points, callback) {
-  db.collection('users').doc(userID).set({points: points}).then(() => {
-    callback();
+function getUserFromSensorID(sensorID: string, callback) {
+  db.collection('users').where('sensorID', '==', sensorID).get().then(userDoc => {
+    callback(userDoc);
   })
   .catch(err => {
     console.error(err);
+  });
+}
+
+function addToUserPoints(sensorID: string, reward: number, callback: () => void) {
+  getUserFromSensorID(sensorID, (userDocs) => {
+    userDocs.forEach((userDoc) => {
+      const newPoints = userDoc.points + reward;
+      userDoc.update({points: newPoints}).then(() => {
+        callback();
+      });
+    })
   });
 }
 
@@ -81,8 +76,8 @@ function getHeatmapData(treatment, timestampStart, callback) {
   .where('treatment', '==', treatment)
   .where('timestamp', '>=', timestampStart)
   .get().then(allData => {
-    for (let data of allData) {
-      //todo {lat, lng, value} object
+    for (let data of allData.docs) {
+      // todo {lat, lng, value} object
       heatmapData.push(data);
     }
     callback(heatmapData);
@@ -104,9 +99,8 @@ function getAllData(callback) {
 export {
   returnDataTest,
   createUser,
-  createUserWithID,
   getUser,
-  setUserPoints,
+  addToUserPoints,
   pushSensorData,
   getHeatmapData,
   getAllData

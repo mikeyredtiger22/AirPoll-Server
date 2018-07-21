@@ -1,8 +1,10 @@
 
 interface User {
-  ID: string,
+  userID: string,
   treatment: string,
+  sensorID: string,
   points: number,
+  created: number,
 }
 
 declare const enum Treatments {
