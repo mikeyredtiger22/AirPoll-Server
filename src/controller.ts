@@ -44,6 +44,15 @@ function pushSensorData(requestBody, callback) {
   });
 }
 
+function getHeatmapData(requestBody, callback) {
+  const dayAgoTimestamp = Date.now() - (24 * 3600 * 1000);
+  getOrCreateUserWithID(requestBody.userID, (user) => {
+    dbController.getHeatmapData(user.treatment, dayAgoTimestamp, heatmapData => {
+      callback({heatmapData: heatmapData});
+    });
+  });
+}
+
 //todo: generate timestamp, to heatmap types, test api
 
 function getAllData(callback) {
@@ -52,5 +61,6 @@ function getAllData(callback) {
 
 export {
   pushSensorData,
+  getHeatmapData,
   getAllData
 };

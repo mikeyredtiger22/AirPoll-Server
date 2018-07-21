@@ -34,7 +34,9 @@ router.get('/', function (req, res) {
   console.log(req.query);
   res.send();
   //TODO: https://www.npmjs.com/package/express-validator
-  //todo calculate and anonymise data?
+  controller.getHeatmapData(req.query, result => {
+    res.json(result);
+  });
 });
 
 //Get Raw Data

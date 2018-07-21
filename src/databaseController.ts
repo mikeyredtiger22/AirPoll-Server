@@ -108,5 +108,6 @@ export {
   getUser,
   setUserPoints,
   pushSensorData,
+  getHeatmapData,
   getAllData
 };
