@@ -19,7 +19,8 @@ function createUser(requestParams, callback) {
       treatment: treatment,
       sensorID: requestParams.sensorID,
       points: 0,
-      created: Date.now(),
+      messages: [{timestamp: Date.now(),
+        message: 'Created user with sensorID: ' + requestParams.sensorID}],
     };
     dbController.createUser(user, (user) => {
       callback({user: user});

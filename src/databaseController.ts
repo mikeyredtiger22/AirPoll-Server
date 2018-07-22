@@ -20,16 +20,35 @@ function returnDataTest(callback) {
 }
 
 function createUser(user: User, callback: (User) => void) {
+  removeSensorIDFromOtherUsers(user.sensorID, () => {
+    addNewUserToDb(user, callback);
+  });
+}
+
+function removeSensorIDFromOtherUsers(sensorID: string, callback: () => void) {
+  getUsersWithSensorID(sensorID, (userDocs) => {
+    for (let userDoc of userDocs.docs) {
+      const data = userDoc.data;
+      //todo
+    }
+    callback();
+  });
+}
+
+function removeSensorIDFromUser(doc, callback) {
+
+}
+
+function addNewUserToDb(user: User, callback: (User) => void) {
   let userRef = db.collection('users').doc();
   user.userID = userRef.id;
+
   userRef.set(user).then(() => {
     callback(user);
   })
   .catch(err => {
     console.error(err);
   });
-  //todo remove sensor ID from other users
-  //todo think about adding message log for users (created, changed sensorID and why)
 }
 
 function getUser(userID: string, callback) {
@@ -41,9 +60,9 @@ function getUser(userID: string, callback) {
   });
 }
 
-function getUserFromSensorID(sensorID: string, callback) {
-  db.collection('users').where('sensorID', '==', sensorID).get().then(userDoc => {
-    callback(userDoc);
+function getUsersWithSensorID(sensorID: string, callback) {
+  db.collection('users').where('sensorID', '==', sensorID).get().then(userDocs => {
+    callback(userDocs);
   })
   .catch(err => {
     console.error(err);
@@ -51,13 +70,13 @@ function getUserFromSensorID(sensorID: string, callback) {
 }
 
 function addToUserPoints(sensorID: string, reward: number, callback: () => void) {
-  getUserFromSensorID(sensorID, (userDocs) => {
+  getUsersWithSensorID(sensorID, (userDocs) => {
     userDocs.forEach((userDoc) => {
       const newPoints = userDoc.points + reward;
       userDoc.update({points: newPoints}).then(() => {
         callback();
       });
-    })
+    });
   });
 }
 
@@ -77,7 +96,7 @@ function getHeatmapData(treatment, timestampStart, callback) {
   .where('timestamp', '>=', timestampStart)
   .get().then(allData => {
     for (let dataDoc of allData.docs) {
-      const data = dataDoc.data();
+      const data = dataDoc.data; //fix
       heatmapData.push({
         lat: data.lat,
         lng: data.lng,

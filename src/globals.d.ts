@@ -4,7 +4,7 @@ interface User {
   treatment: string,
   sensorID: string,
   points: number,
-  created: number,
+  messages: [{timestamp: number, message: string}],
 }
 
 declare const enum Treatments {
