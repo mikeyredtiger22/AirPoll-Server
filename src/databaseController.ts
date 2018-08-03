@@ -5,7 +5,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-let db = admin.firestore();
+const db = admin.firestore();
 
 function returnDataTest(callback) {
   db.collection('newCol1').doc('newDoc2').set({
@@ -19,24 +19,32 @@ function returnDataTest(callback) {
   });
 }
 
-function createUser(user: User, callback: (User) => void) {
-  removeSensorIDFromOtherUsers(user.sensorID, () => {
+function createUser(user: User, timestampNow: number, callback: (User) => void) {
+  removeSensorIDFromOtherUsers(user.sensorID, timestampNow, () => {
     addNewUserToDb(user, callback);
   });
 }
 
-function removeSensorIDFromOtherUsers(sensorID: string, callback: () => void) {
+function removeSensorIDFromOtherUsers(sensorID: string, timestampNow: number, callback: () => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
     for (let userDoc of userDocs.docs) {
-      const data = userDoc.data;
-      //todo
+      const user: User = userDoc.data;
+      //calls are not chained so they can be batched.
+      removeSensorIDFromUser(user, timestampNow);
     }
     callback();
   });
 }
 
-function removeSensorIDFromUser(doc, callback) {
-
+function removeSensorIDFromUser(user: User, timestampNow: number) {
+  const newMessagePath = 'messages.' + timestampNow.toString() + '.message';
+  db.collection('users').doc(user.userID).update({
+    sensorID: '',
+    [newMessagePath]: 'sensorID removed.',
+  })
+  .catch(err => {
+    console.error(err);
+  });
 }
 
 function addNewUserToDb(user: User, callback: (User) => void) {
@@ -96,7 +104,8 @@ function getHeatmapData(treatment, timestampStart, callback) {
   .where('timestamp', '>=', timestampStart)
   .get().then(allData => {
     for (let dataDoc of allData.docs) {
-      const data = dataDoc.data; //fix
+      // @ts-ignore
+      const data: dataPoint = dataDoc.data;
       heatmapData.push({
         lat: data.lat,
         lng: data.lng,

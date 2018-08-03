@@ -13,16 +13,20 @@ function getNextTreatment(callback) { //todo test functionality
 }
 
 function createUser(requestParams, callback) {
+  const timestampNow: number = Date.now();
   getNextTreatment((treatment) => {
-    let user: User = {
+    const user: User = {
       userID: "uninitialised",
       treatment: treatment,
       sensorID: requestParams.sensorID,
       points: 0,
-      messages: [{timestamp: Date.now(),
-        message: 'Created user with sensorID: ' + requestParams.sensorID}],
+      messages: {
+        [timestampNow]: {
+          message: 'Created user with sensorID: ' + requestParams.sensorID
+        }
+      },
     };
-    dbController.createUser(user, (user) => {
+    dbController.createUser(user, timestampNow, (user) => {
       callback({user: user});
     });
   });
