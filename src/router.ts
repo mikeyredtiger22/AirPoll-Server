@@ -1,6 +1,9 @@
 import * as controller from './controller';
 import * as dbController from './databaseController';
+import * as idc from './iotDeviceController';
 import * as express from 'express';
+
+idc.start();
 
 let router = express.Router();
 
