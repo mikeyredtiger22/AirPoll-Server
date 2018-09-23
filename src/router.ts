@@ -1,9 +1,13 @@
 import * as controller from './controller';
 import * as dbController from './databaseController';
-import * as idc from './iotDeviceController';
+import * as iotDeviceController from './iotDeviceController';
 import * as express from 'express';
 
-idc.start();
+serverSetup();
+
+function serverSetup() {
+  iotDeviceController.setupTtnListeners();
+}
 
 let router = express.Router();
 
@@ -16,7 +20,7 @@ router.get('/api', function(req, res) {
 router.get('/data', function(req, res) {
   dbController.returnDataTest((data, err) => {
     if (err) {
-      console.log(err);
+      console.error(err);
     } else {
       console.log(data);
     }

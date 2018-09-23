@@ -38,9 +38,9 @@ function pushSensorData(requestParams, callback) {
     lat: requestParams.lat,
     lng: requestParams.lng,
     value: requestParams.value,
-    accel: requestParams.accel,
     timestamp: requestParams.timestamp
   };
+
   dbController.pushSensorData(dataBody, () => {
     //todo calculate incentive
     const reward = 1;

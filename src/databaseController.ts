@@ -6,6 +6,7 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+db.settings({timestampsInSnapshots: true});
 
 function returnDataTest(callback) {
   db.collection('newCol1').doc('newDoc2').set({
@@ -79,6 +80,11 @@ function getUsersWithSensorID(sensorID: string, callback) {
 
 function addToUserPoints(sensorID: string, reward: number, callback: () => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
+    // if (userDocs.size > 1) {
+    //   const userIDs = userDocs.docs.map(userDoc => userDoc.data.userId);
+    //   console.error("Should only be one user in database with sensorID: ",
+    //     sensorID, "\nFound: ", userIDs.toString());
+    // }
     userDocs.forEach((userDoc) => {
       const newPoints = userDoc.points + reward;
       userDoc.update({points: newPoints}).then(() => {
@@ -89,7 +95,8 @@ function addToUserPoints(sensorID: string, reward: number, callback: () => void)
 }
 
 function pushSensorData(dataBody, callback) {
-  db.collection('data').add(dataBody).then(() => {
+  db.collection('data').add(dataBody).then((doc) => {
+    console.info('Successfully added uplink message data to database with ID: ', doc.id);
     callback();
   })
   .catch(err => {
