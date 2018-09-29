@@ -72,5 +72,5 @@ export {
   createUser,
   pushSensorData,
   getHeatmapData,
-  getAllData
+  getAllData,
 };

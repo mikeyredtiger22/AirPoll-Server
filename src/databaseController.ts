@@ -8,6 +8,46 @@ admin.initializeApp({
 const db = admin.firestore();
 db.settings({timestampsInSnapshots: true});
 
+function migrateData() {
+  db.collection('datapoints').get().then(dataPoints => {
+    for (let dataPointRef of dataPoints.docs) {
+      let dataPoint = dataPointRef.data();
+      getRandomVals((treatment, sensorID) => {
+
+        let dateInt = (new Date(dataPoint.date)).getTime();
+        let migratingDataPoint = {
+          lat: dataPoint.latlng.lat,
+          lng: dataPoint.latlng.lng,
+          value: dataPoint.value,
+          timestamp: dateInt,
+          sensorID: sensorID,
+          treatment: treatment,
+        };
+
+        addMigratingDataPoint(migratingDataPoint);
+      });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
+function getRandomVals(callback) {
+  let randomVal = Math.random();
+  let treatment = randomVal > 0.3 ? 'A' :
+    randomVal > 0.7 ? 'B' : 'C';
+  let sensorID = 'test' + randomVal.toString()[2] + treatment;
+  callback(treatment, sensorID);
+}
+
+function addMigratingDataPoint(dataPoint) {
+  db.collection('data').add(dataPoint)
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 function returnDataTest(callback) {
   db.collection('newCol1').doc('newDoc2').set({
     name: 1, year: 'two'
@@ -136,11 +176,12 @@ function getAllData(callback) {
 }
 
 export {
+  migrateData,
   returnDataTest,
   createUser,
   getUser,
   addToUserPoints,
   pushSensorData,
   getHeatmapData,
-  getAllData
+  getAllData,
 };

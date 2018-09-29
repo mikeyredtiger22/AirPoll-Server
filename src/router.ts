@@ -7,6 +7,7 @@ serverSetup();
 
 function serverSetup() {
   iotDeviceController.setupTtnListeners();
+  // dbController.migrateData();
 }
 
 let router = express.Router();
