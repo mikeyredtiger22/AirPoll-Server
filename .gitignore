@@ -6,3 +6,5 @@ dist/
 node_modules/
 
 firebase-adminsdk\.json
+
+ttn-credentials\.json

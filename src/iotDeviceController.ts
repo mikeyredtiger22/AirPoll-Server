@@ -1,9 +1,6 @@
 import * as controller from './controller';
 import { data, application } from "ttn";
-
-const appID = "airpoll-test-network";
-// const accessKey = "ttn-account-v2.pUMUIL7wSt01Scde5Z6WiR-QAEw6R90b6CPHpKVMtc0";
-const accessKey = "ttn-account-v2.mC19Ku42BQn27kKumxGSFD9V2cVTZoqK7O2Hxgdxtww";
+const { appID, accessKey} = require('../ttn-credentials.json');
 
 export function setupTtnListeners() {
 // The Things Network - IoT Device message listener
@@ -17,11 +14,19 @@ export function setupTtnListeners() {
     // From Device
     client.on("uplink", function (devID, payload) {
       console.info("UPLINK ", devID, "\nPayload: ", payload);
+      let sensorID = payload.dev_id;
+      let messageTime = payload.metadata.time; //todo to UTC time int
       try {
-        let hexByteArray = JSON.stringify(payload.payload_raw);
-        let str = String.fromCharCode.apply(String, JSON.parse(hexByteArray).data);
-        let dataJson = JSON.parse(str);
-        controller.pushSensorData(dataJson, () => {});
+        let value = Buffer.from(payload.payload_raw, 'base64').toString('ascii');
+        console.log(value);
+        let dataBody = {
+          sensorID: sensorID,
+          lat: 50.93646450414906,
+          lng: -1.396842213630634,
+          value: value,
+          timestamp: 11111111111111,
+        };
+        // controller.pushSensorData(dataBody, () => {});
       } catch (err) {
         console.error(err);
       }
@@ -34,7 +39,7 @@ export function setupTtnListeners() {
       value: 69,
       timestamp: 11111111111111,
     };
-    client.send("test-device-id", dataBody, 1, true);
+    // client.send("system000", dataBody, 1, true);
   })
   .catch(err => {
     console.error(err);
