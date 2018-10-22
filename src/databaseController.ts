@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import FieldValue = admin.firestore.FieldValue;
 
 const serviceAccount = require('../firebase-adminsdk.json');
 admin.initializeApp({
@@ -10,8 +11,8 @@ db.settings({timestampsInSnapshots: true});
 
 function migrateData() {
   db.collection('datapoints').get().then(dataPoints => {
-    for (let dataPointRef of dataPoints.docs) {
-      let dataPoint = dataPointRef.data();
+    for (let dataPointSnapshot of dataPoints.docs) {
+      let dataPoint = dataPointSnapshot.data();
       getRandomVals((treatment, sensorID) => {
 
         let dateInt = (new Date(dataPoint.date)).getTime();
@@ -33,10 +34,37 @@ function migrateData() {
   });
 }
 
+function restructureAllData() {
+  db.collection('data').get().then(dataPoints => {
+    for (let dataPointSnapshot of dataPoints.docs) {
+
+      let dataPointRef = dataPointSnapshot.ref;
+      let dataPoint = dataPointSnapshot.data();
+      let timestamp = dataPoint.timestamp ? dataPoint.timestamp : (new Date(dataPoint.date)).getTime();
+      let lat = dataPoint.lat ? dataPoint.lat : dataPoint.latlng.lat;
+      let lng = dataPoint.lat ? dataPoint.lng : dataPoint.latlng.lng;
+      getRandomVals((treatment, sensorID) => {
+        dataPointRef.update({
+          latlng: FieldValue.delete(),
+          lat: lat,
+          lng: lng,
+          value: dataPoint.value,
+          timestamp: timestamp,
+          sensorID: sensorID,
+          treatment: treatment,
+        });
+      });
+    }
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 function getRandomVals(callback) {
   let randomVal = Math.random();
-  let treatment = randomVal > 0.3 ? 'A' :
-    randomVal > 0.7 ? 'B' : 'C';
+  let treatment = randomVal < 0.3 ? 'A' :
+    randomVal < 0.7 ? 'B' : 'C';
   let sensorID = 'test' + randomVal.toString()[2] + treatment;
   callback(treatment, sensorID);
 }
@@ -177,6 +205,7 @@ function getAllData(callback) {
 
 export {
   migrateData,
+  restructureAllData,
   returnDataTest,
   createUser,
   getUser,
