@@ -180,7 +180,7 @@ function getHeatmapData(treatment, timestampStart, callback) {
   .get().then(allData => {
     for (let dataDoc of allData.docs) {
       // @ts-ignore
-      const data: dataPoint = dataDoc.data;
+      const data: dataPoint = dataDoc.data();
       heatmapData.push({
         lat: data.lat,
         lng: data.lng,

@@ -1,15 +1,13 @@
 import * as dbController from './databaseController';
 
-let currentTreatment: Treatments = Treatments.TreatmentA;
-
 /**
  * Alternates treatments for new users
  * Todo: Return the smallest treatment group size to add new user to.
  */
-function getNextTreatment(callback) { //todo test functionality
-  currentTreatment = (currentTreatment === Treatments.TreatmentA) ?
-    Treatments.TreatmentB : Treatments.TreatmentA;
-  callback(currentTreatment);
+function getNextTreatment(callback) {
+  let randomVal = Math.random();
+  let treatment = randomVal < 0.3 ? 'A' : randomVal < 0.7 ? 'B' : 'C';
+  callback(treatment);
 }
 
 function createUser(requestParams, callback) {

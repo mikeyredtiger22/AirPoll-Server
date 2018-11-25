@@ -12,8 +12,3 @@ declare interface dataPoint {
   lng: number,
   value: number,
 }
-
-declare const enum Treatments {
-  TreatmentA = 'treatmentA',
-  TreatmentB = 'treatmentB'
-}
