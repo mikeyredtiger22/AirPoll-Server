@@ -97,7 +97,7 @@ function createUser(user: User, timestampNow: number, callback: (User) => void) 
 function removeSensorIDFromOtherUsers(sensorID: string, timestampNow: number, callback: () => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
     for (let userDoc of userDocs.docs) {
-      const user: User = userDoc.data;
+      const user: User = userDoc.data();
       //calls are not chained so they can be batched.
       removeSensorIDFromUser(user, timestampNow);
     }

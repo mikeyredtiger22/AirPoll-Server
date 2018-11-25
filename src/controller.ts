@@ -13,16 +13,21 @@ function getNextTreatment(callback) { //todo test functionality
 }
 
 function createUser(requestParams, callback) {
+  const sensorID = requestParams.sensorID;
+  if (!sensorID) {
+    callback({error: 'sensorID not supplied in query parameters'});
+    return;
+  }
   const timestampNow: number = Date.now();
   getNextTreatment((treatment) => {
     const user: User = {
-      userID: "uninitialised",
+      userID: "uninitialised", // this is set when object is added to the database
       treatment: treatment,
-      sensorID: requestParams.sensorID,
+      sensorID: sensorID,
       points: 0,
       messages: {
         [timestampNow]: {
-          message: 'Created user with sensorID: ' + requestParams.sensorID
+          message: 'Created user with sensorID: ' + sensorID
         }
       },
     };
