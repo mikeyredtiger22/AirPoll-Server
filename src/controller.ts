@@ -35,6 +35,12 @@ function createUser(requestParams, callback) {
   });
 }
 
+function getUser(requestParams, callback) {
+  dbController.getUser(requestParams.userID, (user) => {
+      callback({user: user});
+  });
+}
+
 function pushSensorData(requestParams, callback) {
   let dataBody = {
     sensorID: requestParams.sensorID,
@@ -73,6 +79,7 @@ function getAllData(callback) {
 
 export {
   createUser,
+  getUser,
   pushSensorData,
   getHeatmapData,
   getAllData,
