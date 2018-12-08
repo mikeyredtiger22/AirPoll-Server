@@ -10,5 +10,14 @@ declare interface User {
 declare interface dataPoint {
   lat: number,
   lng: number,
-  value: number,
+  timestamp: number,
+  sensorID: string,
+  treatment: string,
+  value: string
 }
+
+declare interface Incentive {
+  calculatePoints: (dataPoint: dataPoint) => number;
+}
+
+declare type CalcMethod = (dataPoint: dataPoint) => number;

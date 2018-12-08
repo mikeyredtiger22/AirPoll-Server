@@ -175,12 +175,11 @@ function pushSensorData(dataBody, callback) {
 function getHeatmapData(treatment, timestampStart, callback) {
   let heatmapData = [];
   db.collection('data')
-  .where('treatment', '==', treatment)
+  // .where('treatment', '==', treatment)
   .where('timestamp', '>=', timestampStart)
   .get().then(allData => {
     for (let dataDoc of allData.docs) {
-      // @ts-ignore
-      const data: dataPoint = dataDoc.data();
+      const data = dataDoc.data();
       heatmapData.push({
         lat: data.lat,
         lng: data.lng,
