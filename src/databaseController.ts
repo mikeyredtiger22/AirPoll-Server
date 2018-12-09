@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import FieldValue = admin.firestore.FieldValue;
+import Query = admin.firestore.Query;
 
 const serviceAccount = require('../firebase-adminsdk.json');
 admin.initializeApp({
@@ -214,6 +215,27 @@ function getAllData(callback) {
   });
 }
 
+function getDataPoints(treatment?: string, timeStart?: number, callback?) {
+  let filter: Query = db.collection('data');
+  if (treatment) {
+    filter = filter.where('treatment', '==', treatment);
+  }
+  if (timeStart) {
+    filter = filter.where('timestamp', '>=', timeStart);
+  }
+
+  filter.get().then(allData => {
+    let dataPoints= [];
+    for (let dataDoc of allData.docs) {
+      dataPoints.push(dataDoc.data());
+    }
+    callback(dataPoints);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 function getAllDataPointsInTreatment(treatment: string, callback) {
   db.collection('data')
   .where('treatment', '==', treatment)
@@ -241,4 +263,5 @@ export {
   getHeatmapData,
   getAllData,
   getAllDataPointsInTreatment,
+  getDataPoints,
 };

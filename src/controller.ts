@@ -54,7 +54,7 @@ function pushSensorData(requestParams, callback) {
     };
 
     dbController.pushSensorData(dataPoint, () => {
-      dbController.getAllDataPointsInTreatment(user.treatment, (otherDataPoints) => {
+      dbController.getDataPoints(user.treatment, null, (otherDataPoints) => {
         const points = getIncentivePointsForDataPoint(dataPoint, user, otherDataPoints);
         dbController.addPointsToUser(dataPoint.sensorID, points, () => {
           callback({dataAdded: true, points: points});
