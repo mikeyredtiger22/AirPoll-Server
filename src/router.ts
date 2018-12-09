@@ -6,8 +6,31 @@ import * as express from 'express';
 serverSetup();
 
 function serverSetup() {
+  testMockIncentive();
   // iotDeviceController.setupTtnListeners();
   // dbController.migrateData();
+}
+
+function testMockIncentive() {
+  const startTime = Date.now();
+  // controller.createUser({sensorID: 'mockSensorID'}, (response) => {
+  //   console.log('user: ', response.user);
+  // });
+
+  const mockDataPoint: DataPoint = {
+    sensorID: 'mockSensorID',
+    treatment: 'mockTreatment',
+    lat: 50.93646450414906,
+    lng: -1.396842213630634,
+    value: Math.floor(Math.random() * 100).toString(),
+    timestamp: Date.now(),
+  };
+  controller.pushSensorData(mockDataPoint, (response) => {
+    console.log(response);
+    const endTime = Date.now();
+    const seconds = (endTime - startTime) / 1000;
+    console.log('Mock incentive operation took: ', seconds, ' seconds.');
+  })
 }
 
 let router = express.Router();

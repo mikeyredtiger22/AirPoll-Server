@@ -43,6 +43,7 @@ function getUser(requestParams, callback) {
 }
 
 function pushSensorData(requestParams, callback) {
+  // get user associated with sensor
   dbController.getUserObjectFromSensorID(requestParams.sensorID, (user) => {
     let dataPoint: DataPoint = {
       treatment: user.treatment,
@@ -53,9 +54,14 @@ function pushSensorData(requestParams, callback) {
       timestamp: requestParams.timestamp
     };
 
+    // Add sensor data to database
     dbController.pushSensorData(dataPoint, () => {
-      dbController.getDataPoints(user.treatment, null, (otherDataPoints) => {
+      // const dayAgoTimestamp = Date.now() - (24 * 3600 * 1000);
+      // get all data points (for this treatment, in the last day) - used for some incentive calculations
+      dbController.getDataPoints(user.treatment, /*dayAgoTimestamp*/null, (otherDataPoints) => {
+        // get incentive points for this data point
         const points = getIncentivePointsForDataPoint(dataPoint, user, otherDataPoints);
+        // add incentive points to user object in database
         dbController.addPointsToUser(dataPoint.sensorID, points, () => {
           callback({dataAdded: true, points: points});
         });
