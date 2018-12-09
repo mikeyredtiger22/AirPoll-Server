@@ -1,4 +1,3 @@
-
 declare interface User {
   userID: string,
   treatment: string,
@@ -7,7 +6,7 @@ declare interface User {
   messages: {},
 }
 
-declare interface dataPoint {
+declare interface DataPoint {
   lat: number,
   lng: number,
   timestamp: number,
@@ -17,7 +16,7 @@ declare interface dataPoint {
 }
 
 declare interface Incentive {
-  calculatePoints: (dataPoint: dataPoint) => number;
+  calculate: (dataPoint: DataPoint, user: User) => number;
 }
 
-declare type CalcMethod = (dataPoint: dataPoint) => number;
+declare type CalcMethod = (dataPoint: DataPoint, user: User /*user dataPs, treatment dataPs*/) => number;

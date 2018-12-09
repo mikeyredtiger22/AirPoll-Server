@@ -1,4 +1,5 @@
 import * as dbController from './databaseController';
+import { getPointsForDataPoint } from "./incentiveManager";
 
 /**
  * Alternates treatments for new users
@@ -37,37 +38,41 @@ function createUser(requestParams, callback) {
 
 function getUser(requestParams, callback) {
   dbController.getUser(requestParams.userID, (user) => {
-      callback({user: user});
+    callback({user: user});
   });
 }
 
 function pushSensorData(requestParams, callback) {
-  let dataBody = {
-    sensorID: requestParams.sensorID,
-    lat: requestParams.lat,
-    lng: requestParams.lng,
-    value: requestParams.value,
-    timestamp: requestParams.timestamp
-  };
+  dbController.getUserObjectFromSensorID(requestParams.sensorID, (user) => {
+    let dataPoint: DataPoint = {
+      treatment: user.treatment,
+      sensorID: requestParams.sensorID,
+      lat: requestParams.lat,
+      lng: requestParams.lng,
+      value: requestParams.value,
+      timestamp: requestParams.timestamp
+    };
 
-  dbController.pushSensorData(dataBody, () => {
-    //todo calculate incentive
-    const reward = 1;
-    dbController.addToUserPoints(dataBody.sensorID, reward, () => {
-      callback({dataAdded: true, reward: reward});
+    dbController.pushSensorData(dataPoint, () => {
+      const points = getPointsForDataPoint(dataPoint, user);
+
+      dbController.addToUserPoints(dataPoint.sensorID, points, () => {
+        callback({dataAdded: true, points: points});
+      });
     });
+
   });
 }
 
-function getHeatmapData(requestParams, callback) {
+function getHeatmapData(requestParams, callback) { //todo give treatment? - one db request
   /* use sensorID:
   can return user's own data in separate object
   can create user if not in DB
   todo return user points (and sensor data history)
    */
-  const dayAgoTimestamp = Date.now() - (24 * 3600 * 1000);
+  const monthAgoTimestamp = Date.now() - (24 * 3600 * 1000 * 30);
   dbController.getUser(requestParams.userID, (user) => {
-    dbController.getHeatmapData(user.treatment, dayAgoTimestamp, heatmapData => {
+    dbController.getHeatmapData(user.treatment, monthAgoTimestamp, heatmapData => {
       callback({heatmapData: heatmapData});
     });
   });

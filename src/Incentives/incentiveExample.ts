@@ -1,3 +1,3 @@
 export const calculate: CalcMethod = (dataPoint) => {
-  return 3;
+  return parseInt(dataPoint.value);
 };

@@ -1,23 +1,32 @@
-import * as IncentiveExample from "./Incentives/IncentiveExample";
+import * as incentiveExample from "./Incentives/incentiveExample";
 
-// Single object to access all incentives, make sure to import and add all new incentives to list
-export {
-  IncentiveExample,
+let treatmentIncentiveMap = new Map<string, Incentive>([
+  // set treatment - incentive mapping here (programmatically)
+  ['A', incentiveExample],
+  ['B', incentiveExample],
+  ['C', incentiveExample],
+]);
+
+export function getPointsForDataPoint(dataPoint: DataPoint, user: User) {
+  const incentive = treatmentIncentiveMap.get(user.treatment);
+  let points: number = incentive.calculate(dataPoint, user);
+  // todo get other datapoints from same user and same treatment
+  // todo get treatment and incentive scheme and return points
+  return points;
 }
 
-// todo create treatments and pair with examples
+// todo link treatments to user creation
 
-const mockDataPoint: dataPoint = {
-  sensorID: 'mockData',
-  treatment: 'mockTreatment',
-  lat: 50.93646450414906,
-  lng: -1.396842213630634,
-  value: '99',
-  timestamp: 1111111111111,
-};
-
-let reta: number = IncentiveExample.calculate(mockDataPoint);
-console.log(reta);
-
-// todo: method to take pushedSensorData, get treatment, get incentive scheme,
-//  give incentive scheme helper data / methods, run incentive scheme, return points
+// export function test() {
+//   const mockDataPoint: DataPoint = {
+//     sensorID: 'mockData',
+//     treatment: 'mockTreatment',
+//     lat: 50.93646450414906,
+//     lng: -1.396842213630634,
+//     value: '99',
+//     timestamp: 1111111111111,
+//   };
+//
+//   // let reta: number = incentiveExample.calculate(mockDataPoint);
+//   console.log(reta);
+// }

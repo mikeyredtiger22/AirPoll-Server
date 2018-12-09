@@ -1,24 +1,24 @@
 import * as controller from './controller';
 import * as dbController from './databaseController';
-import * as iotDeviceController from './iotDeviceController';
+// import * as iotDeviceController from './iotDeviceController';
 import * as express from 'express';
 
 serverSetup();
 
 function serverSetup() {
-  iotDeviceController.setupTtnListeners();
+  // iotDeviceController.setupTtnListeners();
   // dbController.migrateData();
 }
 
 let router = express.Router();
 
 //Test API
-router.get('/api', function(req, res) {
+router.get('/api', function (req, res) {
   res.send("Working!");
 });
 
 //Test Database
-router.get('/data', function(req, res) {
+router.get('/data', function (req, res) {
   dbController.returnDataTest((data, err) => {
     if (err) {
       console.error(err);

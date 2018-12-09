@@ -139,6 +139,11 @@ function getUser(userID: string, callback) {
 
 function getUsersWithSensorID(sensorID: string, callback) {
   db.collection('users').where('sensorID', '==', sensorID).get().then(userDocs => {
+    if (userDocs.size > 1) {
+      const userIDs = userDocs.docs.map(userDoc => userDoc.data().userID);
+      console.error("Should only be one user in database with sensorID: ",
+        sensorID, "\nFound: ", userIDs.toString());
+    }
     callback(userDocs);
   })
   .catch(err => {
@@ -146,13 +151,17 @@ function getUsersWithSensorID(sensorID: string, callback) {
   });
 }
 
+function getUserObjectFromSensorID(sensorID: string, callback: (user: User) => void) { // todo cleanup code
+  getUsersWithSensorID(sensorID, (userDocs) => {
+    for (let userDoc of userDocs.docs) {
+      const user: User = userDoc.data();
+      callback(user)
+    }
+  });
+}
+
 function addToUserPoints(sensorID: string, reward: number, callback: () => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
-    // if (userDocs.size > 1) {
-    //   const userIDs = userDocs.docs.map(userDoc => userDoc.data.userId);
-    //   console.error("Should only be one user in database with sensorID: ",
-    //     sensorID, "\nFound: ", userIDs.toString());
-    // }
     userDocs.forEach((userDoc) => {
       const newPoints = userDoc.points + reward;
       userDoc.update({points: newPoints}).then(() => {
@@ -162,9 +171,9 @@ function addToUserPoints(sensorID: string, reward: number, callback: () => void)
   });
 }
 
-function pushSensorData(dataBody, callback) {
-  db.collection('data').add(dataBody).then((doc) => {
-    console.info('Successfully added uplink message data to database with ID: ', doc.id);
+function pushSensorData(dataPoint, callback) {
+  db.collection('dataSensorTest').add(dataPoint).then((doc) => {
+    console.info('Successfully added uplink message datapoint to database with ID: ', doc.id);
     callback();
   })
   .catch(err => {
@@ -208,6 +217,7 @@ export {
   returnDataTest,
   createUser,
   getUser,
+  getUserObjectFromSensorID,
   addToUserPoints,
   pushSensorData,
   getHeatmapData,
