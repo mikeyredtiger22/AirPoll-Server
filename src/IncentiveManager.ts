@@ -7,14 +7,13 @@ let treatmentIncentiveMap = new Map<string, Incentive>([
   ['C', incentiveExample],
 ]);
 
-export function getPointsForDataPoint(dataPoint: DataPoint, user: User) {
+export function getIncentivePointsForDataPoint(dataPoint: DataPoint, user: User, otherDataPoints: DataPoint[]): number {
   const incentive = treatmentIncentiveMap.get(user.treatment);
-  let points: number = incentive.calculate(dataPoint, user);
-  // todo get other datapoints from same user and same treatment
-  // todo get treatment and incentive scheme and return points
+  let points: number = incentive.calculate(dataPoint, user, otherDataPoints);
   return points;
 }
 
+// todo create treatment manager
 // todo link treatments to user creation
 
 // export function test() {

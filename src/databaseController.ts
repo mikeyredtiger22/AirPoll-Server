@@ -160,10 +160,13 @@ function getUserObjectFromSensorID(sensorID: string, callback: (user: User) => v
   });
 }
 
-function addToUserPoints(sensorID: string, reward: number, callback: () => void) {
+function addPointsToUser(sensorID: string, points: number, callback: () => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
+    // todo test and use following snippet:
+    // for (let userDoc of userDocs.docs) {
+    //   const user: User = userDoc.data();
     userDocs.forEach((userDoc) => {
-      const newPoints = userDoc.points + reward;
+      const newPoints = userDoc.points + points;
       userDoc.update({points: newPoints}).then(() => {
         callback();
       });
@@ -211,6 +214,21 @@ function getAllData(callback) {
   });
 }
 
+function getAllDataPointsInTreatment(treatment: string, callback) {
+  db.collection('data')
+  .where('treatment', '==', treatment)
+  .get().then(allData => {
+    let dataPoints= [];
+    for (let dataDoc of allData.docs) {
+      dataPoints.push(dataDoc.data());
+    }
+    callback(dataPoints);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 export {
   migrateData,
   restructureAllData,
@@ -218,8 +236,9 @@ export {
   createUser,
   getUser,
   getUserObjectFromSensorID,
-  addToUserPoints,
+  addPointsToUser,
   pushSensorData,
   getHeatmapData,
   getAllData,
+  getAllDataPointsInTreatment,
 };

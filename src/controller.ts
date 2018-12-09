@@ -1,5 +1,5 @@
 import * as dbController from './databaseController';
-import { getPointsForDataPoint } from "./incentiveManager";
+import { getIncentivePointsForDataPoint } from "./incentiveManager";
 
 /**
  * Alternates treatments for new users
@@ -54,13 +54,13 @@ function pushSensorData(requestParams, callback) {
     };
 
     dbController.pushSensorData(dataPoint, () => {
-      const points = getPointsForDataPoint(dataPoint, user);
-
-      dbController.addToUserPoints(dataPoint.sensorID, points, () => {
-        callback({dataAdded: true, points: points});
-      });
+      dbController.getAllDataPointsInTreatment(user.treatment, (otherDataPoints) => {
+        const points = getIncentivePointsForDataPoint(dataPoint, user, otherDataPoints);
+        dbController.addPointsToUser(dataPoint.sensorID, points, () => {
+          callback({dataAdded: true, points: points});
+        });
+      })
     });
-
   });
 }
 
