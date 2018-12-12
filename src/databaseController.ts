@@ -198,7 +198,7 @@ function pushSensorData(dataPoint, callback) {
 function getHeatmapData(treatment, timestampStart, callback) {
   let heatmapData = [];
   db.collection('data')
-  // .where('treatment', '==', treatment)
+  .where('treatment', '==', treatment)
   .where('timestamp', '>=', timestampStart)
   .get().then(allData => {
     for (let dataDoc of allData.docs) {

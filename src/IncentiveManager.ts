@@ -16,17 +16,3 @@ export function getIncentivePointsForDataPoint(dataPoint: DataPoint, user: User,
 
 // todo create treatment manager
 // todo link treatments to user creation
-
-// export function test() {
-//   const mockDataPoint: DataPoint = {
-//     sensorID: 'mockData',
-//     treatment: 'mockTreatment',
-//     lat: 50.93646450414906,
-//     lng: -1.396842213630634,
-//     value: '99',
-//     timestamp: 1111111111111,
-//   };
-//
-//   // let reta: number = incentiveExample.calculate(mockDataPoint);
-//   console.log(reta);
-// }

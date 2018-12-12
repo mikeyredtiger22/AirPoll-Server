@@ -2,8 +2,7 @@ import * as dbController from './databaseController';
 import { getIncentivePointsForDataPoint } from "./incentiveManager";
 
 /**
- * Alternates treatments for new users
- * Todo: Return the smallest treatment group size to add new user to.
+ * Random treatment assigned to user. Will change to use treatment manager.
  */
 function getNextTreatment(callback) {
   let randomVal = Math.random();
@@ -44,7 +43,6 @@ function getUser(requestParams, callback) {
 
 function pushSensorData(requestParams, callback) {
   // get user associated with sensor
-  // TODO: only get user obj once, return userID
   dbController.getUserObjectFromSensorID(requestParams.sensorID, (user) => {
     let dataPoint: DataPoint = {
       treatment: user.treatment,
@@ -73,17 +71,10 @@ function pushSensorData(requestParams, callback) {
   });
 }
 
-function getHeatmapData(requestParams, callback) { //todo give treatment? - one db request
-  /* use sensorID:
-  can return user's own data in separate object
-  can create user if not in DB
-  todo return user points (and sensor data history)
-   */
-  const monthAgoTimestamp = Date.now() - (24 * 3600 * 1000 * 30);
-  dbController.getUser(requestParams.userID, (user) => {
-    dbController.getHeatmapData(user.treatment, monthAgoTimestamp, heatmapData => {
-      callback({heatmapData: heatmapData});
-    });
+function getHeatmapData(requestParams, callback) {
+  const monthsAgoTimestamp = Date.now() - (24 * 3600 * 1000 * 100);
+  dbController.getHeatmapData(requestParams.treatment, monthsAgoTimestamp, heatmapData => {
+    callback({heatmapData: heatmapData});
   });
 }
 

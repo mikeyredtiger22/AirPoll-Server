@@ -6,7 +6,7 @@ import * as express from 'express';
 serverSetup();
 
 function serverSetup() {
-  testMockIncentive();
+  // testMockIncentive();
   // iotDeviceController.setupTtnListeners();
   // dbController.migrateData();
 }
