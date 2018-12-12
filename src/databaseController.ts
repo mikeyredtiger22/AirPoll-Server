@@ -246,6 +246,26 @@ function getDataPoints(treatment?: string, timeStart?: number, callback?) {
   });
 }
 
+function getDataPointsWithFilter(filterOptions: [{}], callback?) {
+  let filter: Query = db.collection('data');
+  filterOptions.forEach(filterOption => {
+    // PLEASE READ: https://firebase.google.com/docs/firestore/query-data/queries#query_limitations
+    // Some filter combinations are not possible, and some require database indexes to be created before.
+    filter = filter.where(filterOption[0], filterOption[1], filterOption[2]);
+  });
+
+  filter.get().then(allData => {
+    let dataPoints= [];
+    for (let dataDoc of allData.docs) {
+      dataPoints.push(dataDoc.data());
+    }
+    callback(dataPoints);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 function getAllDataPointsInTreatment(treatment: string, callback) {
   db.collection('data')
   .where('treatment', '==', treatment)
