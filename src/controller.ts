@@ -1,14 +1,5 @@
 import * as dbController from './databaseController';
-import { getIncentivePointsForDataPoint } from "./incentiveManager";
-
-/**
- * Random treatment assigned to user. Will change to use treatment manager.
- */
-function getNextTreatment(callback) {
-  let randomVal = Math.random();
-  let treatment = randomVal < 0.3 ? 'A' : randomVal < 0.7 ? 'B' : 'C';
-  callback(treatment);
-}
+import { getIncentivePointsForDataPoint, treatments } from "./incentiveManager";
 
 function createUser(requestParams, callback) {
   const sensorID = requestParams.sensorID;
@@ -17,21 +8,20 @@ function createUser(requestParams, callback) {
     return;
   }
   const timestampNow: number = Date.now();
-  getNextTreatment((treatment) => {
-    const user: User = {
-      userID: "uninitialised", // this is set when object is added to the database
-      treatment: treatment,
-      sensorID: sensorID,
-      points: 0,
-      messages: {
-        [timestampNow]: {
-          message: 'Created user with sensorID: ' + sensorID
-        }
-      },
-    };
-    dbController.createUser(user, timestampNow, (user) => {
-      callback({user: user});
-    });
+  const treatment = treatments[Math.floor(Math.random() * treatments.length)];
+  const user: User = {
+    userID: "uninitialised", // this is set when object is added to the database
+    treatment: treatment,
+    sensorID: sensorID,
+    points: 0,
+    messages: {
+      [timestampNow]: {
+        message: 'Created user with sensorID: ' + sensorID
+      }
+    },
+  };
+  dbController.createUser(user, timestampNow, (user) => {
+    callback({user: user});
   });
 }
 
