@@ -234,7 +234,7 @@ function getDataPoints(treatment?: string, timeStart?: number, callback?) {
     filter = filter.where('timestamp', '>=', timeStart);
   }
 
-  filter.get().then(allData => {
+  filter.orderBy('timestamp', 'desc').get().then(allData => {
     let dataPoints= [];
     for (let dataDoc of allData.docs) {
       dataPoints.push(dataDoc.data());
