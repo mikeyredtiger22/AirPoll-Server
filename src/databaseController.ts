@@ -35,6 +35,23 @@ function migrateData() {
   });
 }
 
+function undoDuplication() {
+  db.collection('data').get().then(dataPoints => {
+    let count = 0;
+    for (let dataPointSnapshot of dataPoints.docs) {
+      let createTime = dataPointSnapshot.createTime.seconds;
+      if (createTime === 1543157936 || createTime === 1543157935) {
+        count++;
+        // dataPointSnapshot.ref.delete()
+      }
+    }
+    console.log('count: ', count);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 function restructureAllData() {
   db.collection('data').get().then(dataPoints => {
     for (let dataPointSnapshot of dataPoints.docs) {
@@ -246,6 +263,7 @@ function getAllDataPointsInTreatment(treatment: string, callback) {
 
 export {
   migrateData,
+  undoDuplication,
   restructureAllData,
   returnDataTest,
   createUser,
