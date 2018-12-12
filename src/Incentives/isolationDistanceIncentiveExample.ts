@@ -1,8 +1,20 @@
 export const calculate: CalcMethod = (dataPoint: DataPoint, user: User, getDataPoints, callback) => {
   const monthsAgoTimestamp = Date.now() - (24 * 3600 * 1000 * 100);
   getDataPoints(user.treatment, monthsAgoTimestamp, (otherDataPoints) => {
-    const firstPoint: DataPoint = otherDataPoints[0];
-    callback( parseInt(firstPoint.value) + 500);
+    // Filter: within 500m box around data point (±250m each side)
+    let filteredDataPoints = otherDataPoints.filter(otherDataPoint =>
+      // latitude (north/south), ±100m ~=~ ±0.01 lat (in uk)
+      // longitude (east/west), ±100m ~=~ ±0.002 lng (in uk)
+      otherDataPoint.lat >= (dataPoint.lat - 0.025) &&
+      otherDataPoint.lat <= (dataPoint.lat + 0.025) &&
+      otherDataPoint.lng >= (dataPoint.lng - 0.005) &&
+      otherDataPoint.lng <= (dataPoint.lng + 0.005)
+    );
+
+    const pointsInSpaceTimeArea = filteredDataPoints.length;
+    // Note: this incentive scheme implementation can be abused / is unfair
+    const points = pointsInSpaceTimeArea < 10 ? 10 - pointsInSpaceTimeArea : 1;
+    callback(points);
   });
   /**
    * todo Steps:
