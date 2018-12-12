@@ -1,4 +1,9 @@
-export const calculate: CalcMethod = (dataPoint: DataPoint, user: User, otherDataPoints: DataPoint[]) => {
+export const calculate: CalcMethod = (dataPoint: DataPoint, user: User, getDataPoints, callback) => {
+  const monthsAgoTimestamp = Date.now() - (24 * 3600 * 1000 * 100);
+  getDataPoints(user.treatment, monthsAgoTimestamp, (otherDataPoints) => {
+    const firstPoint: DataPoint = otherDataPoints[0];
+    callback( parseInt(firstPoint.value) + 500);
+  });
   /**
    * todo Steps:
    * Get all data points with filer:

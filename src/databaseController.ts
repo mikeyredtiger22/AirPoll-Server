@@ -163,14 +163,13 @@ function getUserObjectFromSensorID(sensorID: string, callback: (user: User) => v
 
 function addPointsToUser(sensorID: string, points: number, callback: () => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
-    // todo test and use following snippet:
     for (let userDoc of userDocs.docs) {
       const user: User = userDoc.data();
       const newPoints = user.points + points;
       userDoc.ref.update({points: newPoints}).then(() => {
         callback();
       });
-    };
+    }
   });
 }
 

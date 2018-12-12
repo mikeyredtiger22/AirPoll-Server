@@ -16,7 +16,7 @@ declare interface DataPoint {
 }
 
 declare interface Incentive {
-  calculate: (dataPoint: DataPoint, user: User,  otherDataPoints: DataPoint[]) => number;
+  calculate: (dataPoint: DataPoint, user: User, getDataPoints, callback: (points: number) => void) => void;
 }
 
-declare type CalcMethod = (dataPoint: DataPoint, user: User, otherDataPoints: DataPoint[]) => number;
+declare type CalcMethod = (dataPoint: DataPoint, user: User, getDataPoints, callback: (points: number) => void) => void;

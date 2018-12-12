@@ -12,7 +12,6 @@ function serverSetup() {
 }
 
 function testMockIncentive() {
-  const startTime = Date.now();
   // controller.createUser({sensorID: 'mockSensorID'}, (response) => {
   //   console.log('user: ', response.user);
   // });
@@ -27,9 +26,6 @@ function testMockIncentive() {
   };
   controller.pushSensorData(mockDataPoint, (response) => {
     console.log(response);
-    const endTime = Date.now();
-    const seconds = (endTime - startTime) / 1000;
-    console.log('Mock incentive operation took: ', seconds, ' seconds.');
   })
 }
 

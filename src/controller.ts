@@ -44,6 +44,7 @@ function getUser(requestParams, callback) {
 
 function pushSensorData(requestParams, callback) {
   // get user associated with sensor
+  // TODO: only get user obj once, return userID
   dbController.getUserObjectFromSensorID(requestParams.sensorID, (user) => {
     let dataPoint: DataPoint = {
       treatment: user.treatment,
@@ -56,16 +57,18 @@ function pushSensorData(requestParams, callback) {
 
     // Add sensor data to database
     dbController.pushSensorData(dataPoint, () => {
-      // const dayAgoTimestamp = Date.now() - (24 * 3600 * 1000);
-      // get all data points (for this treatment, in the last day) - used for some incentive calculations
-      dbController.getDataPoints(user.treatment, /*dayAgoTimestamp*/null, (otherDataPoints) => {
-        // get incentive points for this data point
-        const points = getIncentivePointsForDataPoint(dataPoint, user, otherDataPoints);
+      // We pass a function to the incentive scheme calculation that allows the calculation method to
+      // get data points from the database. This is so that the data point filter is specified in the
+      // calculation method, so only the points that are needed are retrieved from the database. Or the
+      // method will not be called at all if not needed, this prevents every data point being retrieved
+      // every time data from IoT sensors is received.
+      getIncentivePointsForDataPoint(dataPoint, user, dbController.getDataPoints, (points) => {
+
         // add incentive points to user object in database
         dbController.addPointsToUser(dataPoint.sensorID, points, () => {
           callback({dataAdded: true, points: points});
         });
-      })
+      });
     });
   });
 }

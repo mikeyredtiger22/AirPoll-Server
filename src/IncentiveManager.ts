@@ -1,16 +1,17 @@
 import * as incentiveExample from "./Incentives/incentiveExample";
+import * as isolationDistanceIncentiveExample from "./Incentives/isolationDistanceIncentiveExample";
 
 let treatmentIncentiveMap = new Map<string, Incentive>([
   // set treatment - incentive mapping here (programmatically)
   ['A', incentiveExample],
-  ['B', incentiveExample],
+  ['B', isolationDistanceIncentiveExample],
   ['C', incentiveExample],
 ]);
 
-export function getIncentivePointsForDataPoint(dataPoint: DataPoint, user: User, otherDataPoints: DataPoint[]): number {
+export function getIncentivePointsForDataPoint(dataPoint: DataPoint, user: User, getDataPoints, callback) {
   const incentive = treatmentIncentiveMap.get(user.treatment);
-  let points: number = incentive.calculate(dataPoint, user, otherDataPoints);
-  return points;
+
+  incentive.calculate(dataPoint, user, getDataPoints, callback);
 }
 
 // todo create treatment manager
