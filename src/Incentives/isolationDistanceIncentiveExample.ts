@@ -19,5 +19,4 @@ export const calculate: CalcMethod = (dataPoint: DataPoint, user: User, getDataP
    *
    * And/Or: bonus points if no data in current square within last hour! (best)
    */
-  return 3;
 };

@@ -152,7 +152,7 @@ function getUsersWithSensorID(sensorID: string, callback) {
   });
 }
 
-function getUserObjectFromSensorID(sensorID: string, callback: (user: User) => void) { // todo cleanup code
+function getUserObjectFromSensorID(sensorID: string, callback: (user: User) => void) {
   getUsersWithSensorID(sensorID, (userDocs) => {
     for (let userDoc of userDocs.docs) {
       const user: User = userDoc.data();
@@ -161,15 +161,10 @@ function getUserObjectFromSensorID(sensorID: string, callback: (user: User) => v
   });
 }
 
-function addPointsToUser(sensorID: string, points: number, callback: () => void) {
-  getUsersWithSensorID(sensorID, (userDocs) => {
-    for (let userDoc of userDocs.docs) {
-      const user: User = userDoc.data();
-      const newPoints = user.points + points;
-      userDoc.ref.update({points: newPoints}).then(() => {
-        callback();
-      });
-    }
+function addPointsToUser(user: User, points: number, callback: () => void) {
+  const newPoints = user.points + points;
+  db.collection('users').doc(user.userID).update({points: newPoints}).then(() => {
+    callback();
   });
 }
 

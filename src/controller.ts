@@ -65,7 +65,7 @@ function pushSensorData(requestParams, callback) {
       getIncentivePointsForDataPoint(dataPoint, user, dbController.getDataPoints, (points) => {
 
         // add incentive points to user object in database
-        dbController.addPointsToUser(dataPoint.sensorID, points, () => {
+        dbController.addPointsToUser(user, points, () => {
           callback({dataAdded: true, points: points});
         });
       });
