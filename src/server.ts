@@ -4,6 +4,8 @@
  * Module dependencies.
  */
 
+console.log('STARTING SERVER');
+
 var app = require('./app');
 var debug = require('debug')('server-airpoll:server');
 var http = require('http');
@@ -50,7 +52,7 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener for HTTP server 'error' event.
  */
 
 function onError(error) {
@@ -78,7 +80,7 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTP server 'listening' event.
  */
 
 function onListening() {

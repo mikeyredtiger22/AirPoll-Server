@@ -6,6 +6,7 @@ import * as express from 'express';
 serverSetup();
 
 function serverSetup() {
+  console.log('SERVER RUNNING');
   // testMockIncentive();
   // iotDeviceController.setupTtnListeners();
   // dbController.migrateData();
@@ -33,7 +34,7 @@ let router = express.Router();
 
 //Test API
 router.get('/api', function (req, res) {
-  res.send("Working!");
+  res.send('Working!');
 });
 
 //Test Database

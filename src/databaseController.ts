@@ -181,8 +181,8 @@ function getUsersWithSensorID(sensorID: string, callback) {
   db.collection('users').where('sensorID', '==', sensorID).get().then(userDocs => {
     if (userDocs.size > 1) {
       const userIDs = userDocs.docs.map(userDoc => userDoc.data().userID);
-      console.error("Should only be one user in database with sensorID: ",
-        sensorID, "\nFound: ", userIDs.toString());
+      console.error('Should only be one user in database with sensorID: ',
+        sensorID, '\nFound: ', userIDs.toString());
     }
     callback(userDocs);
   })

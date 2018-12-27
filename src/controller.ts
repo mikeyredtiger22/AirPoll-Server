@@ -1,5 +1,5 @@
 import * as dbController from './databaseController';
-import { getIncentivePointsForDataPoint, treatments } from "./incentiveManager";
+import { getIncentivePointsForDataPoint, treatments } from './incentiveManager';
 
 function createUser(requestParams, callback) {
   const sensorID = requestParams.sensorID;
@@ -10,7 +10,7 @@ function createUser(requestParams, callback) {
   const timestampNow: number = Date.now();
   const treatment = treatments[Math.floor(Math.random() * treatments.length)];
   const user: User = {
-    userID: "uninitialised", // this is set when object is added to the database
+    userID: 'uninitialised', // this is set when object is added to the database
     treatment: treatment,
     sensorID: sensorID,
     points: 0,

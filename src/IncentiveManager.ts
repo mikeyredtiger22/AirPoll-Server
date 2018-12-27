@@ -1,5 +1,5 @@
-import * as incentiveExample from "./Incentives/incentiveExample";
-import * as isolationDistanceIncentiveExample from "./Incentives/isolationDistanceIncentiveExample";
+import * as incentiveExample from './Incentives/incentiveExample';
+import * as isolationDistanceIncentiveExample from './Incentives/isolationDistanceIncentiveExample';
 
 // Used in user creation
 export const treatments = ['A', 'B', 'C'];
