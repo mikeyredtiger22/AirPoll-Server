@@ -6,6 +6,8 @@
 
 console.log('STARTING SERVER');
 
+require('dotenv').config();
+
 var app = require('./app');
 var debug = require('debug')('server-airpoll:server');
 var http = require('http');

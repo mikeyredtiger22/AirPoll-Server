@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 import FieldValue = admin.firestore.FieldValue;
 import Query = admin.firestore.Query;
 
-const serviceAccount = require('../firebase-adminsdk.json');
+const serviceAccount = require('./firebaseAdminCredentials');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
