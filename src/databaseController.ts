@@ -79,6 +79,28 @@ function restructureAllData() {
   });
 }
 
+function convertDateTime() {
+  db.collection('data').get().then(dataPoints => {
+    let count = 0;
+    for (let dataPointSnapshot of dataPoints.docs) {
+
+      let dataPointRef = dataPointSnapshot.ref;
+      let dataPoint = dataPointSnapshot.data();
+      if (typeof dataPoint.timestamp === 'string'){
+        count++;
+        let newTimestamp = new Date(dataPoint.timestamp).getTime();
+        console.log(newTimestamp);
+        dataPointRef.update({timestamp: newTimestamp});
+      }
+      let timestamp = dataPoint.timestamp ? dataPoint.timestamp : (new Date(dataPoint.date)).getTime();
+    }
+    console.log('count: ', count);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
+
 function getRandomVals(callback) {
   let randomVal = Math.random();
   let treatment = randomVal < 0.3 ? 'A' :
@@ -282,9 +304,6 @@ function getAllDataPointsInTreatment(treatment: string, callback) {
 }
 
 export {
-  migrateData,
-  undoDuplication,
-  restructureAllData,
   returnDataTest,
   createUser,
   getUser,
