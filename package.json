@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "tsc && node ./dist/server.js"
+    "start": "node ./dist/server.js",
+    "postinstall": "yarn build",
+    "build": "tsc"
   },
   "dependencies": {
     "@firebase/app-types": "^0.3.2",
