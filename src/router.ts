@@ -7,6 +7,9 @@ serverSetup();
 
 function serverSetup() {
   console.log('SERVER RUNNING');
+  // Debugging private key parsing on deployment:
+  console.log(process.env.private_key);
+  console.log(process.env.private_key.replace(/\\n/g, '\n'));
   // testMockIncentive();
   // iotDeviceController.setupTtnListeners();
   // dbController.migrateData();
